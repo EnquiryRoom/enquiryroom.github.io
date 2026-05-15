@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>The Enquiry Room — History on Trial</title>
+  <meta name="description" content="Interactive history case files for ages 11–16. Examine real primary sources, weigh the evidence, and give your verdict. Built by a qualified history teacher and archivist.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'><circle cx='12' cy='12' r='10' fill='%238b1a1a' stroke='%23ffd166' stroke-width='1.5'/><text x='12' y='15.5' font-family='Georgia' font-size='7' font-weight='700' fill='%23ffd166' text-anchor='middle'>?</text><line x1='20' y1='20' x2='26' y2='26' stroke='%23ffd166' stroke-width='2.5' stroke-linecap='round'/><circle cx='18' cy='18' r='5' fill='none' stroke='%23ffd166' stroke-width='2'/></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Merriweather:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    /* ── TOKENS ── */
+    :root {
+      --blue:#1a6fc4; --blue-light:#e8f2fc; --blue-mid:#c2daf5;
+      --amber:#e07b00; --amber-light:#fff3e0;
+      --red:#8b1a1a;
+      --green:#1e8f4e; --green-light:#e6f7ee;
+      --grey:#f4f5f7; --grey-mid:#e2e4e8; --grey-dark:#5a6270;
+      --ink:#1a1d23; --white:#ffffff;
+      --gold:#ffd166;
+      --radius:12px; --radius-lg:18px;
+      --shadow:0 2px 12px rgba(0,0,0,0.10);
+      --shadow-lg:0 4px 24px rgba(0,0,0,0.13);
+      --max:900px;
+    }
+
+    /* ── RESET ── */
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html,body{overflow-x:hidden;-webkit-text-size-adjust:100%;}
+    body{font-family:'Nunito',sans-serif;background:var(--grey);color:var(--ink);line-height:1.6;}
+    a{color:inherit;text-decoration:none;}
+    button{touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer;}
+
+    /* ── NAV ── */
+    .topnav{
+      background:var(--blue);
+      padding:0 1.5rem;
+      display:flex;align-items:center;justify-content:space-between;
+      height:56px;
+      box-shadow:0 2px 8px rgba(26,111,196,0.25);
+      position:sticky;top:0;z-index:100;
+      border-bottom:2px solid rgba(255,209,102,0.3);
+    }
+    .topnav-logo{
+      display:flex;align-items:center;gap:0.5rem;
+      font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;
+      color:#fff;letter-spacing:-0.01em;
+    }
+    .topnav-logo span{color:var(--gold);}
+    .topnav-tagline{
+      font-size:0.72rem;font-weight:700;
+      color:rgba(255,255,255,0.6);
+      letter-spacing:0.08em;text-transform:uppercase;
+      display:none;
+    }
+    @media(min-width:500px){.topnav-tagline{display:block;}}
+
+    /* ── MAIN LAYOUT ── */
+    .page{max-width:var(--max);margin:0 auto;padding:2rem 1rem 5rem;}
+
+    /* ── HERO ── */
+    .hero{
+      background:linear-gradient(135deg,#1a6fc4 0%,#0e4f9a 100%);
+      border-radius:var(--radius-lg);
+      padding:3.5rem 2rem 3rem;
+      color:#fff;
+      text-align:center;
+      box-shadow:var(--shadow-lg);
+      margin-bottom:2rem;
+      position:relative;
+      overflow:hidden;
+    }
+    .hero::before{
+      content:'?';
+      position:absolute;right:-10px;bottom:-40px;
+      font-family:'Merriweather',Georgia,serif;
+      font-size:220px;font-weight:700;
+      color:rgba(255,255,255,0.04);
+      line-height:1;pointer-events:none;
+    }
+    .hero-kicker{
+      display:inline-flex;align-items:center;gap:0.5rem;
+      font-size:0.72rem;font-weight:800;
+      letter-spacing:0.15em;text-transform:uppercase;
+      color:var(--gold);margin-bottom:1rem;
+    }
+    .hero h1{
+      font-size:clamp(2rem,6vw,3.2rem);
+      font-family:'Merriweather',Georgia,serif;
+      font-weight:700;line-height:1.1;
+      margin-bottom:0.5rem;
+    }
+    .hero h1 em{
+      font-style:italic;color:var(--gold);
+    }
+    .hero-sub{
+      font-size:1rem;color:rgba(255,255,255,0.85);
+      max-width:520px;margin:0.8rem auto 0;line-height:1.7;
+    }
+    .hero-cta{
+      margin-top:2rem;
+      display:flex;align-items:center;justify-content:center;gap:1rem;
+      flex-wrap:wrap;
+    }
+    .btn-primary{
+      background:var(--gold);color:var(--ink);
+      font-family:'Nunito',sans-serif;font-size:0.95rem;font-weight:900;
+      border:none;border-radius:30px;
+      padding:0.85rem 2rem;
+      box-shadow:0 3px 12px rgba(0,0,0,0.2);
+      transition:all 0.2s;
+      display:inline-flex;align-items:center;gap:0.4rem;
+    }
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.25);}
+    .btn-secondary{
+      background:rgba(255,255,255,0.15);color:#fff;
+      font-family:'Nunito',sans-serif;font-size:0.95rem;font-weight:800;
+      border:2px solid rgba(255,255,255,0.4);border-radius:30px;
+      padding:0.82rem 1.8rem;
+      transition:all 0.2s;
+    }
+    .btn-secondary:hover{background:rgba(255,255,255,0.25);}
+
+    /* ── HOW IT WORKS ── */
+    .section-label{
+      font-size:0.7rem;font-weight:800;
+      letter-spacing:0.12em;text-transform:uppercase;
+      color:var(--grey-dark);margin-bottom:0.5rem;
+    }
+    .section-title{
+      font-family:'Merriweather',Georgia,serif;
+      font-size:clamp(1.3rem,3vw,1.7rem);
+      font-weight:700;color:var(--ink);
+      margin-bottom:0.4rem;line-height:1.2;
+    }
+    .section-sub{
+      font-size:0.9rem;color:var(--grey-dark);
+      margin-bottom:1.5rem;line-height:1.6;
+    }
+    .how-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:1rem;margin-bottom:2.5rem;
+    }
+    .how-card{
+      background:var(--white);
+      border-radius:var(--radius);
+      padding:1.4rem 1rem;
+      text-align:center;
+      box-shadow:var(--shadow);
+      border-top:3px solid var(--blue);
+      position:relative;
+    }
+    .how-card-num{
+      position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+      width:28px;height:28px;border-radius:50%;
+      background:var(--blue);color:#fff;
+      font-size:0.75rem;font-weight:900;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .how-card-icon{font-size:1.8rem;margin:0.5rem 0 0.6rem;}
+    .how-card-title{font-size:0.82rem;font-weight:800;color:var(--ink);margin-bottom:0.3rem;}
+    .how-card-text{font-size:0.78rem;color:var(--grey-dark);line-height:1.5;}
+    @media(max-width:560px){.how-grid{grid-template-columns:1fr;}}
+
+    /* ── CASES ── */
+    .cases-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+      gap:1.2rem;
+      margin-bottom:2.5rem;
+    }
+    .case-card{
+      background:var(--white);
+      border-radius:var(--radius-lg);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      transition:transform 0.2s,box-shadow 0.2s;
+      display:flex;flex-direction:column;
+    }
+    .case-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+    .case-card-header{
+      padding:1.5rem 1.5rem 1rem;
+      background:linear-gradient(135deg,#1a6fc4 0%,#0e4f9a 100%);
+      color:#fff;position:relative;overflow:hidden;
+    }
+    .case-card-header::after{
+      content:'';position:absolute;
+      bottom:-20px;right:-20px;
+      width:80px;height:80px;
+      border-radius:50%;
+      background:rgba(255,255,255,0.06);
+    }
+    .case-badge{
+      display:inline-block;
+      font-size:0.65rem;font-weight:800;
+      letter-spacing:0.1em;text-transform:uppercase;
+      background:var(--gold);color:var(--ink);
+      border-radius:20px;padding:0.2rem 0.7rem;
+      margin-bottom:0.6rem;
+    }
+    .case-badge.coming{background:rgba(255,255,255,0.2);color:#fff;}
+    .case-card-title{
+      font-family:'Merriweather',Georgia,serif;
+      font-size:1rem;font-weight:700;
+      line-height:1.3;margin-bottom:0.3rem;
+    }
+    .case-card-date{font-size:0.75rem;color:rgba(255,255,255,0.7);}
+    .case-card-body{padding:1.2rem 1.5rem;flex:1;display:flex;flex-direction:column;}
+    .case-card-desc{font-size:0.85rem;color:var(--grey-dark);line-height:1.6;flex:1;margin-bottom:1rem;}
+    .case-meta{
+      display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;
+    }
+    .case-meta-tag{
+      font-size:0.7rem;font-weight:700;
+      background:var(--grey);color:var(--grey-dark);
+      border-radius:20px;padding:0.2rem 0.6rem;
+    }
+    .case-cta{
+      display:block;width:100%;
+      padding:0.75rem;
+      background:var(--blue);color:#fff;
+      font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:800;
+      border:none;border-radius:var(--radius);
+      text-align:center;
+      transition:all 0.18s;
+    }
+    .case-cta:hover{background:#145da8;}
+    .case-cta.locked{background:var(--grey-mid);color:var(--grey-dark);cursor:default;}
+    .case-cta.locked:hover{background:var(--grey-mid);transform:none;}
+
+    /* ── PRICING ── */
+    .pricing-card{
+      background:var(--white);
+      border-radius:var(--radius-lg);
+      box-shadow:var(--shadow-lg);
+      padding:2rem;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:1.5rem;
+      align-items:center;
+      margin-bottom:2.5rem;
+      border:2px solid var(--blue-mid);
+      position:relative;
+      overflow:hidden;
+    }
+    .pricing-card::before{
+      content:'';position:absolute;
+      top:0;left:0;right:0;height:4px;
+      background:linear-gradient(90deg,var(--blue),var(--gold));
+    }
+    .pricing-label{
+      font-size:0.7rem;font-weight:800;
+      letter-spacing:0.1em;text-transform:uppercase;
+      color:var(--blue);margin-bottom:0.4rem;
+    }
+    .pricing-title{
+      font-family:'Merriweather',Georgia,serif;
+      font-size:1.2rem;font-weight:700;
+      margin-bottom:0.5rem;
+    }
+    .pricing-desc{font-size:0.88rem;color:var(--grey-dark);line-height:1.6;}
+    .pricing-includes{
+      margin-top:0.8rem;
+      display:flex;flex-direction:column;gap:0.3rem;
+    }
+    .pricing-includes li{
+      font-size:0.82rem;color:var(--ink);
+      display:flex;gap:0.5rem;align-items:flex-start;
+      list-style:none;
+    }
+    .pricing-includes li::before{content:'✓';color:var(--green);font-weight:800;flex-shrink:0;}
+    .pricing-right{text-align:center;flex-shrink:0;}
+    .pricing-price{
+      font-size:2.5rem;font-weight:900;
+      color:var(--blue);line-height:1;
+      margin-bottom:0.3rem;
+    }
+    .pricing-price-sub{font-size:0.78rem;color:var(--grey-dark);margin-bottom:1rem;}
+    @media(max-width:560px){
+      .pricing-card{grid-template-columns:1fr;}
+      .pricing-right{text-align:left;}
+    }
+
+    /* ── ABOUT ── */
+    .about-card{
+      background:var(--ink);
+      border-radius:var(--radius-lg);
+      padding:2rem 2rem 2rem;
+      color:#fff;
+      margin-bottom:2.5rem;
+      position:relative;overflow:hidden;
+    }
+    .about-card::before{
+      content:'"';
+      position:absolute;top:-10px;left:1.5rem;
+      font-family:'Merriweather',Georgia,serif;
+      font-size:8rem;color:rgba(255,255,255,0.05);
+      line-height:1;pointer-events:none;
+    }
+    .about-label{
+      font-size:0.7rem;font-weight:800;
+      letter-spacing:0.12em;text-transform:uppercase;
+      color:var(--gold);margin-bottom:1rem;
+    }
+    .about-text{
+      font-size:0.95rem;line-height:1.8;
+      color:rgba(255,255,255,0.85);
+      max-width:600px;
+    }
+    .about-credentials{
+      margin-top:1.2rem;
+      display:flex;gap:0.6rem;flex-wrap:wrap;
+    }
+    .about-cred{
+      font-size:0.75rem;font-weight:700;
+      background:rgba(255,255,255,0.1);
+      color:rgba(255,255,255,0.8);
+      border-radius:20px;padding:0.3rem 0.8rem;
+      border:1px solid rgba(255,255,255,0.15);
+    }
+
+    /* ── KS3 BADGE STRIP ── */
+    .badge-strip{
+      background:var(--white);
+      border-radius:var(--radius);
+      padding:1rem 1.5rem;
+      display:flex;align-items:center;justify-content:center;
+      gap:2rem;flex-wrap:wrap;
+      margin-bottom:2.5rem;
+      box-shadow:var(--shadow);
+    }
+    .badge-item{
+      display:flex;align-items:center;gap:0.5rem;
+      font-size:0.8rem;font-weight:700;color:var(--grey-dark);
+    }
+    .badge-item span{font-size:1.1rem;}
+
+    /* ── FOOTER ── */
+    footer{
+      text-align:center;
+      font-size:0.75rem;color:var(--grey-dark);
+      padding-top:2rem;
+      border-top:1px solid var(--grey-mid);
+    }
+    footer a{color:var(--blue);}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="topnav">
+  <div class="topnav-logo">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+      <circle cx="12" cy="12" r="10" fill="#8b1a1a" stroke="#ffd166" stroke-width="1.5"/>
+      <circle cx="12" cy="12" r="7" fill="none" stroke="#ffd166" stroke-width="0.8" stroke-dasharray="2 1.5"/>
+      <text x="12" y="15.5" font-family="Georgia,serif" font-size="7" font-weight="700" fill="#ffd166" text-anchor="middle">?</text>
+      <line x1="20" y1="20" x2="26" y2="26" stroke="#ffd166" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="18" cy="18" r="5" fill="none" stroke="#ffd166" stroke-width="2"/>
+    </svg>
+    <span>The Enquiry <span>Room</span></span>
+  </div>
+  <div class="topnav-tagline">History on Trial</div>
+</nav>
+
+<div class="page">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-kicker">
+      <svg width="16" height="16" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" fill="rgba(255,255,255,0.15)" stroke="#ffd166" stroke-width="1.5"/>
+        <text x="12" y="15.5" font-family="Georgia,serif" font-size="7" font-weight="700" fill="#ffd166" text-anchor="middle">?</text>
+        <line x1="20" y1="20" x2="26" y2="26" stroke="#ffd166" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="18" cy="18" r="5" fill="none" stroke="#ffd166" stroke-width="2"/>
+      </svg>
+      The Enquiry Room
+    </div>
+    <h1>History on <em>Trial</em></h1>
+    <p class="hero-sub">Real primary sources. Real historical mysteries. You examine the evidence and give your verdict.</p>
+    <div class="hero-cta">
+      <a href="anne-boleyn.html" class="btn-primary">▸ Try a free case file</a>
+      <a href="#cases" class="btn-secondary">See all cases</a>
+    </div>
+  </section>
+
+  <!-- BADGE STRIP -->
+  <div class="badge-strip">
+    <div class="badge-item"><span>🎓</span> Ages 11–16</div>
+    <div class="badge-item"><span>📜</span> Real historical documents</div>
+    <div class="badge-item"><span>🏠</span> Home education friendly</div>
+    <div class="badge-item"><span>🖥️</span> Works offline</div>
+    <div class="badge-item"><span>⚖️</span> KS3 history curriculum</div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="section-label">How it works</div>
+  <h2 class="section-title">Three steps. One verdict.</h2>
+  <p class="section-sub">Each case file follows the same structure — rigorous enough to challenge, clear enough to work independently.</p>
+
+  <div class="how-grid">
+    <div class="how-card">
+      <div class="how-card-num">1</div>
+      <div class="how-card-icon">🖼️</div>
+      <div class="how-card-title">Examine the portrait</div>
+      <div class="how-card-text">Click the hotspots on a real historical portrait. Learn to read clothing, expression and context as historical evidence.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-card-num">2</div>
+      <div class="how-card-icon">📜</div>
+      <div class="how-card-title">Read the document</div>
+      <div class="how-card-text">Explore a real primary source — a letter, despatch or court record. Tap phrases to unpack meaning. File evidence as you go.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-card-num">3</div>
+      <div class="how-card-icon">⚖️</div>
+      <div class="how-card-title">Give your verdict</div>
+      <div class="how-card-text">Weigh the evidence from all four perspectives. Write a structured argument. Download or share it with a teacher or parent.</div>
+    </div>
+  </div>
+
+  <!-- CASES -->
+  <div class="section-label" id="cases">Case files</div>
+  <h2 class="section-title">Open a case</h2>
+  <p class="section-sub">Each case is built around real historical documents and genuine historical debate. There is no single right answer — only better and worse arguments.</p>
+
+  <div class="cases-grid">
+
+    <!-- Case 1: Anne Boleyn — FREE -->
+    <div class="case-card">
+      <div class="case-card-header">
+        <div class="case-badge">Free taster</div>
+        <div class="case-card-title">The Execution of Anne Boleyn</div>
+        <div class="case-card-date">England, 1536</div>
+      </div>
+      <div class="case-card-body">
+        <p class="case-card-desc">Anne Boleyn has been arrested, tried and executed in just 17 days. The charges are serious — but some of the dates are impossible. Four perspectives. One truth.</p>
+        <div class="case-meta">
+          <span class="case-meta-tag">Tudor</span>
+          <span class="case-meta-tag">4 perspectives</span>
+          <span class="case-meta-tag">45–60 min</span>
+        </div>
+        <a href="anne-boleyn.html" class="case-cta">▸ Open this case file — free</a>
+      </div>
+    </div>
+
+    <!-- Case 2: Peterloo — Coming Soon -->
+    <div class="case-card">
+      <div class="case-card-header" style="background:linear-gradient(135deg,#2d4a6e 0%,#1a2f45 100%);">
+        <div class="case-badge coming">Coming soon</div>
+        <div class="case-card-title">The Peterloo Massacre</div>
+        <div class="case-card-date">Manchester, 1819</div>
+      </div>
+      <div class="case-card-body">
+        <p class="case-card-desc">Eighteen people died when cavalry charged a peaceful crowd of 60,000. Who gave the order — and was it murder, a mistake, or justified force?</p>
+        <div class="case-meta">
+          <span class="case-meta-tag">Victorian</span>
+          <span class="case-meta-tag">4 perspectives</span>
+          <span class="case-meta-tag">45–60 min</span>
+        </div>
+        <button class="case-cta locked" disabled>Coming soon</button>
+      </div>
+    </div>
+
+    <!-- Case 3: Thomas Becket — Coming Soon -->
+    <div class="case-card">
+      <div class="case-card-header" style="background:linear-gradient(135deg,#4a2d1a 0%,#2d1a0e 100%);">
+        <div class="case-badge coming">Coming soon</div>
+        <div class="case-card-title">The Murder of Thomas Becket</div>
+        <div class="case-card-date">Canterbury, 1170</div>
+      </div>
+      <div class="case-card-body">
+        <p class="case-card-desc">Four knights. One archbishop. And a king who may — or may not — have ordered the killing. Did Henry II murder his closest friend?</p>
+        <div class="case-meta">
+          <span class="case-meta-tag">Medieval</span>
+          <span class="case-meta-tag">4 perspectives</span>
+          <span class="case-meta-tag">45–60 min</span>
+        </div>
+        <button class="case-cta locked" disabled>Coming soon</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PRICING -->
+  <div class="section-label">Full access</div>
+  <div class="pricing-card">
+    <div class="pricing-left">
+      <div class="pricing-label">Lifetime access — one payment</div>
+      <div class="pricing-title">The Enquiry Room — Full Library</div>
+      <p class="pricing-desc">One payment. All current cases, plus every new case added in future. No subscription. No renewal.</p>
+      <ul class="pricing-includes">
+        <li>All current case files, unlocked immediately</li>
+        <li>Every future case included at no extra cost</li>
+        <li>Works offline — download and keep forever</li>
+        <li>Suitable for KS3 home education and school homework</li>
+        <li>PEEL writing frame and downloadable verdict included</li>
+      </ul>
+    </div>
+    <div class="pricing-right">
+      <div class="pricing-price">£12.99</div>
+      <div class="pricing-price-sub">one-off payment</div>
+      <a href="https://gumroad.com" target="_blank" class="btn-primary" style="display:inline-flex;font-size:0.88rem;padding:0.75rem 1.5rem;">Buy now →</a>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <div class="about-card">
+    <div class="about-label">About The Enquiry Room</div>
+    <p class="about-text">Most history resources for young people treat primary sources as decoration. The Enquiry Room was built to change that. Every case is built around real documents — letters, despatches, eyewitness accounts — handled the way a historian would handle them. The questions are designed the way a teacher would design them.</p>
+    <div class="about-credentials">
+      <span class="about-cred">Qualified secondary history teacher</span>
+      <span class="about-cred">Qualified archivist</span>
+      <span class="about-cred">All sources public domain</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer style="max-width:var(--max);margin:0 auto;padding:1.5rem 1rem 3rem;">
+  <p>© 2025 The Enquiry Room &nbsp;·&nbsp; History on Trial &nbsp;·&nbsp; <a href="mailto:hello@theenquiryroom.co.uk">hello@theenquiryroom.co.uk</a></p>
+  <p style="margin-top:0.4rem;">All primary sources used are in the public domain. Built for ages 11–16.</p>
+</footer>
+
+</body>
+</html>
